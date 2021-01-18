@@ -93,11 +93,71 @@ void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool b
     // visualize results
     if (bVis)
     {
-        cv::Mat visImage = img.clone();
-        cv::drawKeypoints(img, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-        string windowName = "Shi-Tomasi Corner Detector Results";
-        cv::namedWindow(windowName, 6);
-        imshow(windowName, visImage);
-        cv::waitKey(0);
+        visualizeResult(img, keypoints);
     }
+}
+
+void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis)
+{
+    double t = (double)cv::getTickCount();
+
+    // TODO
+
+    t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    cout << "Harris detector with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+
+    if (bVis) // visualize results
+    {
+        visualizeResult(img, keypoints);
+    }
+}
+
+
+
+void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis)
+{
+    double t = (double)cv::getTickCount();
+
+    if (detectorType.compare("FAST") == 0)
+    {
+        // TODO
+    }
+    else if (detectorType.compare("BRISK") == 0)
+    {
+        // TODO
+    }
+    else if (detectorType.compare("ORB") == 0)
+    {
+        // TODO
+    }
+    else if (detectorType.compare("AKAZE") == 0)
+    {
+        // TODO
+    }
+    else if (detectorType.compare("SIFT") == 0)
+    {
+        // TODO
+    }
+    else
+    {
+        return; // Should not happen
+    }
+
+    t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    cout << "Modern detection (" << detectorType << ") with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+
+    if (bVis) // visualize results
+    {
+        visualizeResult(img, keypoints);
+    }
+}
+
+void visualizeResult(cv::Mat &img, std::vector<cv::KeyPoint> &keypoints)
+{
+    cv::Mat visImage = img.clone();
+    cv::drawKeypoints(img, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    string windowName = "Shi-Tomasi Corner Detector Results";
+    cv::namedWindow(windowName, 6);
+    imshow(windowName, visImage);
+    cv::waitKey(0);
 }
