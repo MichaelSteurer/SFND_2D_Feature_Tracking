@@ -133,9 +133,18 @@ int main(int argc, const char *argv[])
         cv::Rect vehicleRect(535, 180, 180, 150);
         if (bFocusOnVehicle)
         {
-            // ...
+            for (vector<cv::KeyPoint>::iterator it = keypoints.begin(); it != keypoints.end();)
+            {
+                if(it->pt.inside(vehicleRect)) 
+                {
+                    ++it;
+                }
+                else 
+                {
+                    it = keypoints.erase(it);
+                }
+            }
         }
-
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
