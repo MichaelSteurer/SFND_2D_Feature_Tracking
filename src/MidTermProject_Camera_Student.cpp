@@ -18,6 +18,8 @@
 
 using namespace std;
 
+bool DEBUG = true;
+
 /* MAIN PROGRAM */
 int main(int argc, const char *argv[])
 {
@@ -61,8 +63,25 @@ int main(int argc, const char *argv[])
 
         // push image into data frame buffer
         DataFrame frame;
+        frame.index = imgIndex; 
         frame.cameraImg = imgGray;
-        dataBuffer.push_back(frame);
+
+        // Implement ring buffer with fixed size. 
+        if (dataBuffer.size() >= dataBufferSize)  // remove first element if
+        {                                         // the buffer size is exceeded
+            dataBuffer.erase(dataBuffer.begin());
+        }
+        dataBuffer.push_back(frame);              // append new element at the end
+
+        if (DEBUG)
+        {
+            cout << "DEBUG: Push new element  ";
+            for(int i = 0; i < dataBuffer.size(); i++)
+            {
+                cout << dataBuffer[i].index << "  ";
+            }
+            cout << endl;
+        }
 
         //// EOF STUDENT ASSIGNMENT
         cout << "#1 : LOAD IMAGE INTO BUFFER done" << endl;

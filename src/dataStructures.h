@@ -7,6 +7,7 @@
 
 struct DataFrame { // represents the available sensor information at the same time instance
     
+    int index; // index helper
     cv::Mat cameraImg; // camera image
     
     std::vector<cv::KeyPoint> keypoints; // 2D keypoints within camera image
