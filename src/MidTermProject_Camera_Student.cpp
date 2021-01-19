@@ -6,6 +6,7 @@
 #include <vector>
 #include <cmath>
 #include <limits>
+#include <numeric>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -24,6 +25,11 @@ bool DEBUG = true;
 int main(int argc, const char *argv[])
 {
 
+    cout << "OpenCV version : " << CV_VERSION << endl;
+	cout << "Major version : " << CV_MAJOR_VERSION << endl;
+	cout << "Minor version : " << CV_MINOR_VERSION << endl;
+	cout << "Subminor version : " << CV_SUBMINOR_VERSION << endl;
+	
     /* INIT VARIABLES AND DATA STRUCTURES */
 
     // data location
@@ -93,6 +99,75 @@ int main(int argc, const char *argv[])
 
         vector<string> detectorTypes = {"SHITOMASI", "HARRIS", "FAST", "BRISK", "ORB", "AKAZE", "SIFT"};
         string detectorType = detectorTypes[0];
+
+        /////////////////////////////////////////////////////
+        // TASK 7
+
+        for (int detectorTypeIterator = 0; detectorTypeIterator < detectorTypes.size(); detectorTypeIterator++)
+        {
+            string detectorType = detectorTypes[detectorTypeIterator];
+            vector<cv::KeyPoint> keypoints; // create empty feature list for current image
+
+            bool bVis = false;
+            if (detectorType.compare("SHITOMASI") == 0)
+            {
+                detKeypointsShiTomasi(keypoints, imgGray, bVis);
+            }
+            else if (detectorType.compare("HARRIS") == 0)
+            {
+                detKeypointsHarris(keypoints, imgGray, bVis);
+            }
+            else
+            {
+                detKeypointsModern(keypoints, imgGray, detectorType, bVis);
+            }
+            
+            cv::Rect vehicleRect(535, 180, 180, 150);
+
+
+            vector<float> keyPointSizes;
+            for (auto it = keypoints.begin(); it != keypoints.end(); it++)
+            {
+                if(it->pt.inside(vehicleRect))
+                {
+                    keyPointSizes.push_back(it->size);
+                }
+            }
+
+            // Taken from https://stackoverflow.com/a/7616783
+            double sum = std::accumulate(keyPointSizes.begin(), keyPointSizes.end(), 0.0);
+            double mean = sum / keyPointSizes.size();
+
+            std::vector<double> diff(keyPointSizes.size());
+            std::transform(keyPointSizes.begin(), keyPointSizes.end(), diff.begin(),
+                         std::bind2nd(std::minus<double>(), mean));
+            double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+            double stdev = std::sqrt(sq_sum / keyPointSizes.size());
+
+            cout << "  Mean: " << mean << ", Std: " << stdev << endl;
+
+            /* OUTPUT
+                Shi-Tomasi detection with n=1370 keypoints in 58.7865 ms
+                Mean: 4, Std: 0
+                Harris detector with n=115 keypoints in 24.9737 ms
+                Mean: 6, Std: 0
+                Modern detection (FAST) with n=5063 keypoints in 2.52738 ms
+                Mean: 7, Std: 0
+                Modern detection (BRISK) with n=2757 keypoints in 166.79 ms
+                Mean: 21.4408, Std: 14.4372
+                Modern detection (ORB) with n=500 keypoints in 117.107 ms
+                Mean: 57.1108, Std: 25.8496
+                Modern detection (AKAZE) with n=1351 keypoints in 151.283 ms
+                Mean: 7.77008, Std: 3.95659
+                Modern detection (SIFT) with n=1438 keypoints in 183.54 ms
+                Mean: 5.04017, Std: 5.95885
+            */
+        }
+        return 0;
+
+        // TASK 7
+        /////////////////////////////////////////////////////
+
 
         bool bVis = false;
         if (detectorType.compare("SHITOMASI") == 0)
