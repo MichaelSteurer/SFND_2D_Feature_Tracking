@@ -24,6 +24,11 @@ bool DEBUG = true;
 int main(int argc, const char *argv[])
 {
 
+    cout << "OpenCV version : " << CV_VERSION << endl;
+	cout << "Major version : " << CV_MAJOR_VERSION << endl;
+	cout << "Minor version : " << CV_MINOR_VERSION << endl;
+	cout << "Subminor version : " << CV_SUBMINOR_VERSION << endl;
+	
     /* INIT VARIABLES AND DATA STRUCTURES */
 
     // data location
