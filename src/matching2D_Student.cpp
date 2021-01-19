@@ -7,6 +7,12 @@ using namespace std;
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
                       std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType)
 {
+    // Note: parts of the code in this function are taken from file
+    //     SFND_Camera/Lesson 4 - Tracking Image Features/Descriptor Matching/solution/descriptor_matching
+    // in repository
+    //     https://github.com/udacity/SFND_Camera/
+    //
+
     // configure matcher
     bool crossCheck = false;
     cv::Ptr<cv::DescriptorMatcher> matcher;
@@ -18,7 +24,13 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        // ...
+
+        if (descSource.type() != CV_32F)
+        { // OpenCV bug workaround : convert binary descriptors to floating point due to a bug in current OpenCV implementation
+            descSource.convertTo(descSource, CV_32F);
+            descRef.convertTo(descRef, CV_32F);
+        }
+        matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
     }
 
     // perform matching task
@@ -30,7 +42,18 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     else if (selectorType.compare("SEL_KNN") == 0)
     { // k nearest neighbors (k=2)
 
-        // ...
+        std::vector<vector<cv::DMatch>> tempMatches;
+        matcher->knnMatch(descSource, descRef, tempMatches, 2);
+        // remove bad keypoint matches
+        double minDescDistRatio = 0.8;
+        for (auto it = tempMatches.begin(); it != tempMatches.end(); ++it)
+        {
+            if ((*it)[0].distance < minDescDistRatio * (*it)[1].distance)
+            {
+                matches.push_back((*it)[0]);
+            }
+        }
+        cout << "DEBUG: Removed " << tempMatches.size() - matches.size() << "out of" << tempMatches.size() << endl;
     }
 }
 
@@ -55,7 +78,7 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     {
         int bytes = 32;
         bool use_orientation = false;
-        
+
         extractor = cv::xfeatures2d::BriefDescriptorExtractor::create(bytes, use_orientation);
     }
     else if (descriptorType.compare("ORB") == 0)
@@ -223,7 +246,7 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
 void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis)
 {
     double t = (double)cv::getTickCount();
-    
+
     cv::Ptr<cv::FeatureDetector> detector;
     if (detectorType.compare("FAST") == 0)
     {
