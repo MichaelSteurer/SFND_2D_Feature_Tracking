@@ -94,6 +94,58 @@ int main(int argc, const char *argv[])
         vector<string> detectorTypes = {"SHITOMASI", "HARRIS", "FAST", "BRISK", "ORB", "AKAZE", "SIFT"};
         string detectorType = detectorTypes[0];
 
+        /////////////////////////////////////////////////////
+        // TASK 7
+
+        for (int detectorTypeIterator = 0; detectorTypeIterator < detectorTypes.size(); detectorTypeIterator++)
+        {
+            string detectorType = detectorTypes[detectorTypeIterator];
+            vector<cv::KeyPoint> keypoints; // create empty feature list for current image
+
+            bool bVis = false;
+            if (detectorType.compare("SHITOMASI") == 0)
+            {
+                detKeypointsShiTomasi(keypoints, imgGray, bVis);
+            }
+            else if (detectorType.compare("HARRIS") == 0)
+            {
+                detKeypointsHarris(keypoints, imgGray, bVis);
+            }
+            else
+            {
+                detKeypointsModern(keypoints, imgGray, detectorType, bVis);
+            }
+            
+            cv::Rect vehicleRect(535, 180, 180, 150);
+
+
+            vector<float> keyPointSizes;
+            for (auto it = keypoints.begin(); it != keypoints.end(); it++)
+            {
+                if(it->pt.inside(vehicleRect))
+                {
+                    keyPointSizes.push_back(it->size);
+                }
+
+            }
+
+
+            double sum = std::accumulate(keyPointSizes.begin(), keyPointSizes.end(), 0.0);
+            double mean = sum / keyPointSizes.size();
+
+            std::vector<double> diff(keyPointSizes.size());
+            std::transform(keyPointSizes.begin(), keyPointSizes.end(), diff.begin(),
+                        std::bind2nd(std::minus<double>(), mean));
+            double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+            double stdev = std::sqrt(sq_sum / keyPointSizes.size());
+
+        }
+        return 0;
+
+        // TASK 7
+        /////////////////////////////////////////////////////
+
+
         bool bVis = false;
         if (detectorType.compare("SHITOMASI") == 0)
         {
