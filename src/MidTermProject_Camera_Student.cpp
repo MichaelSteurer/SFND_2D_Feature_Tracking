@@ -63,10 +63,10 @@ int main(int argc, const char *argv[])
 
         // push image into data frame buffer
         DataFrame frame;
-        frame.index = imgIndex; 
+        frame.index = imgIndex;
         frame.cameraImg = imgGray;
 
-        // Implement ring buffer with fixed size. 
+        // Implement ring buffer with fixed size.
         if (dataBuffer.size() >= dataBufferSize)  // remove first element if
         {                                         // the buffer size is exceeded
             dataBuffer.erase(dataBuffer.begin());
@@ -90,19 +90,9 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType;
-        // detectorType = "SHITOMASI";
-        detectorType = "HARRIS";
-        // detectorType = "FAST";
-        // detectorType = "BRISK";
-        // detectorType = "ORB";
-        // detectorType = "AKAZE";
-        // detectorType = "SIFT";
 
-
-        //// STUDENT ASSIGNMENT
-        //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
-        //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+        vector<string> detectorTypes = {"SHITOMASI", "HARRIS", "FAST", "BRISK", "ORB", "AKAZE", "SIFT"};
+        string detectorType = detectorTypes[0];
 
         bool bVis = false;
         if (detectorType.compare("SHITOMASI") == 0)
@@ -135,11 +125,11 @@ int main(int argc, const char *argv[])
         {
             for (vector<cv::KeyPoint>::iterator it = keypoints.begin(); it != keypoints.end();)
             {
-                if(it->pt.inside(vehicleRect)) 
+                if(it->pt.inside(vehicleRect))
                 {
                     ++it;
                 }
-                else 
+                else
                 {
                     it = keypoints.erase(it);
                 }
@@ -193,9 +183,15 @@ int main(int argc, const char *argv[])
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
-            string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
+            string matcherType; // MAT_BF, MAT_FLANN
+            matcherType = "MAT_BF";
+            // matcherType = "MAT_FLANN";
+
             string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
-            string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+
+            string selectorType;       // SEL_NN, SEL_KNN
+            // selectorType = "SEL_NN";
+            selectorType = "SEL_KNN";
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
