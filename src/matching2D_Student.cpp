@@ -125,7 +125,11 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
         double edgeThreshold = 10;
         double sigma = 1.6;
         
+#if (CV_VERSION_MAJOR >= 4 && CV_VERSION_MINOR > 1)
         extractor = cv::SIFT::create(nfeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+#else
+        extractor = cv::xfeatures2d::SIFT::create(nfeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+#endif
     }
     else
     {
@@ -298,7 +302,12 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
         double edgeThreshold = 10;
         double sigma = 1.6;
 
+#if (CV_VERSION_MAJOR >= 4 && CV_VERSION_MINOR > 1)
         detector = cv::SIFT::create(nfeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);
+#else
+        detector = cv::xfeatures2d::SIFT::create(nfeatures, nOctaveLayers, contrastThreshold, edgeThreshold, sigma);        
+#endif
+
     }
     else
     {
