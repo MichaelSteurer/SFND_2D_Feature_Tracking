@@ -21,22 +21,23 @@ using namespace std;
 
 bool DEBUG = true;
 
-int process(string detectorType, string descriptorType);
+int process(string detectorType, string descriptorType, int selector);
 
 
 /* MAIN PROGRAM */
 int main(int argc, const char *argv[])
 {
     cout << "OpenCV version : " << CV_VERSION << endl;
-	cout << "Major version : " << CV_MAJOR_VERSION << endl;
-	cout << "Minor version : " << CV_MINOR_VERSION << endl;
-	cout << "Subminor version : " << CV_SUBMINOR_VERSION << endl;
+    cout << "Major version : " << CV_MAJOR_VERSION << endl;
+    cout << "Minor version : " << CV_MINOR_VERSION << endl;
+    cout << "Subminor version : " << CV_SUBMINOR_VERSION << endl;
 	
     vector<string> detectorTypes;
     vector<string> descriptorTypes;
 
-    int selector = 9;
-    if (selector == 7)
+    int SELECTOR = 8; // 7, 8, 9
+
+    if (SELECTOR == 7)
     {
         ///////////////////////////////////////////
         // TASK 7
@@ -44,7 +45,7 @@ int main(int argc, const char *argv[])
         descriptorTypes = {""};
         // TASK 7
         ///////////////////////////////////////////
-    } else if (selector == 8 || selector == 9)
+    } else if (SELECTOR == 8 || SELECTOR == 9)
     {
         ///////////////////////////////////////////
         // TASK 8
@@ -71,16 +72,19 @@ int main(int argc, const char *argv[])
             }
 
             double t = (double)cv::getTickCount();
-            process(detectorType, descriptorType);
+            process(detectorType, descriptorType, SELECTOR);
             t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-            cout << "TASK 9: " << "Detector: " << setw(10) << detectorType << ", Descriptor: " << setw(10) << descriptorType << ", t: " << 1000 * t / 1.0 << " ms" << endl;
+            if (SELECTOR == 9)
+            {
+                cout << "TASK 9: " << "Detector: " << setw(10) << detectorType << ", Descriptor: " << setw(10) << descriptorType << ", t: " << 1000 * t / 1.0 << " ms" << endl;
+            }
 
         }
     }
     return 0;
 }
 
-int process(string detectorType, string descriptorType) 
+int process(string detectorType, string descriptorType, int selector) 
 {
     /* INIT VARIABLES AND DATA STRUCTURES */
 
@@ -211,7 +215,11 @@ int process(string detectorType, string descriptorType)
         double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
         double stdev = std::sqrt(sq_sum / keypointsSize.size());
 
-        cout << "TASK 7: (img:" << imgIndex << ") " << setw(10) << detectorType << " Mean: " << setw(10) << mean << ", Std: " << setw(10) << stdev << endl;
+        if (selector == 7)
+        {
+            cout << "TASK 7: (img:" << imgIndex << ") " << setw(10) << detectorType << " Num: " << setw(10) << keypointsSize.size() << ", Mean: " << setw(10) << mean << ", Std: " << setw(10) << stdev << endl;
+        }
+
 
         // TASK 7
         //////////////////////////////////////////////
@@ -300,7 +308,10 @@ int process(string detectorType, string descriptorType)
             bVis = false;
         }
  
-        cout << "TASK 8: (img:" << imgIndex << ") " << "Detector: " << setw(10) << detectorType << ", Descriptor: " << setw(10) << descriptorType << ", Kpt Mathes: " << (dataBuffer.end() - 1)->kptMatches.size() << endl;
+        if (selector == 8)
+        {
+            cout << "TASK 8: (img:" << imgIndex << ") " << "Detector: " << setw(10) << detectorType << ", Descriptor: " << setw(10) << descriptorType << ", Kpt Matches: " << (dataBuffer.end() - 1)->kptMatches.size() << endl;
+        }
  
     } // eof loop over all images
 
