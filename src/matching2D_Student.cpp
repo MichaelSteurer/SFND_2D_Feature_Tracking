@@ -5,7 +5,8 @@ using namespace std;
 
 // Find best matches for keypoints in two camera images based on several matching methods
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
-                      std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType)
+                      std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType, 
+                      std::string detectorType)
 {
     // Note: parts of the code in this function are taken from file
     //     SFND_Camera/Lesson 4 - Tracking Image Features/Descriptor Matching/solution/descriptor_matching
@@ -19,7 +20,12 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 
     if (matcherType.compare("MAT_BF") == 0)
     {
+        // https://stackoverflow.com/a/50367834
         int normType = cv::NORM_HAMMING;
+        if (detectorType.compare("SIFT") == 0)
+        {
+            normType = cv::NORM_L1;
+        }
         matcher = cv::BFMatcher::create(normType, crossCheck);
     }
     else if (matcherType.compare("MAT_FLANN") == 0)

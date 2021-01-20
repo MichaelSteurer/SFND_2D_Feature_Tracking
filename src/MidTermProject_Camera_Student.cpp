@@ -21,15 +21,62 @@ using namespace std;
 
 bool DEBUG = true;
 
+int process(string detectorType, string descriptorType);
+
+
 /* MAIN PROGRAM */
 int main(int argc, const char *argv[])
 {
-
     cout << "OpenCV version : " << CV_VERSION << endl;
 	cout << "Major version : " << CV_MAJOR_VERSION << endl;
 	cout << "Minor version : " << CV_MINOR_VERSION << endl;
 	cout << "Subminor version : " << CV_SUBMINOR_VERSION << endl;
 	
+    vector<string> detectorTypes;
+    vector<string> descriptorTypes;
+
+    int selector = 8;
+    if (selector == 7)
+    {
+        ///////////////////////////////////////////
+        // TASK 7
+        detectorTypes = {"SHITOMASI", "HARRIS", "FAST", "BRISK", "ORB", "AKAZE", "SIFT"};
+        descriptorTypes = {""};
+        // TASK 7
+        ///////////////////////////////////////////
+    } else if (selector == 8)
+    {
+        ///////////////////////////////////////////
+        // TASK 8
+        detectorTypes = {"SHITOMASI", "HARRIS", "FAST", "BRISK", "ORB", "AKAZE", "SIFT"};
+        descriptorTypes = {"BRISK", "BRIEF", "ORB", "FREAK", "AKAZE", "SIFT"};
+        // TASK 8
+        ///////////////////////////////////////////
+    }
+    
+    for (int detectorTypeIterator = 0; detectorTypeIterator < detectorTypes.size(); detectorTypeIterator++)
+    {
+        for (int descriptorTypeIterator = 0; descriptorTypeIterator < descriptorTypes.size(); descriptorTypeIterator++)
+        {
+            string detectorType = detectorTypes[detectorTypeIterator];
+            string descriptorType = descriptorTypes[descriptorTypeIterator];
+            cout << "DEBUG " << detectorType << "  " << descriptorType << endl;
+            if (
+                (descriptorType == "AKAZE" && detectorType != "AKAZE") ||  // descriptor AKAZE requires detector AKAZE
+                (descriptorType == "SIFT" && detectorType != "SIFT") ||  // descriptor SIFT only with detector sift
+                (descriptorType == "ORB" && detectorType == "SIFT")  // detector SIFT doesn't play well with descriptor ORB
+            )
+            {
+                continue;
+            }
+            process(detectorType, descriptorType);
+        }
+    }
+    return 0;
+}
+
+int process(string detectorType, string descriptorType) 
+{
     /* INIT VARIABLES AND DATA STRUCTURES */
 
     // data location
@@ -97,77 +144,6 @@ int main(int argc, const char *argv[])
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
 
-        vector<string> detectorTypes = {"SHITOMASI", "HARRIS", "FAST", "BRISK", "ORB", "AKAZE", "SIFT"};
-        string detectorType = detectorTypes[0];
-
-        /////////////////////////////////////////////////////
-        // TASK 7
-
-        for (int detectorTypeIterator = 0; detectorTypeIterator < detectorTypes.size(); detectorTypeIterator++)
-        {
-            string detectorType = detectorTypes[detectorTypeIterator];
-            vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-
-            bool bVis = false;
-            if (detectorType.compare("SHITOMASI") == 0)
-            {
-                detKeypointsShiTomasi(keypoints, imgGray, bVis);
-            }
-            else if (detectorType.compare("HARRIS") == 0)
-            {
-                detKeypointsHarris(keypoints, imgGray, bVis);
-            }
-            else
-            {
-                detKeypointsModern(keypoints, imgGray, detectorType, bVis);
-            }
-            
-            cv::Rect vehicleRect(535, 180, 180, 150);
-
-
-            vector<float> keyPointSizes;
-            for (auto it = keypoints.begin(); it != keypoints.end(); it++)
-            {
-                if(it->pt.inside(vehicleRect))
-                {
-                    keyPointSizes.push_back(it->size);
-                }
-            }
-
-            // Taken from https://stackoverflow.com/a/7616783
-            double sum = std::accumulate(keyPointSizes.begin(), keyPointSizes.end(), 0.0);
-            double mean = sum / keyPointSizes.size();
-
-            std::vector<double> diff(keyPointSizes.size());
-            std::transform(keyPointSizes.begin(), keyPointSizes.end(), diff.begin(),
-                         std::bind2nd(std::minus<double>(), mean));
-            double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-            double stdev = std::sqrt(sq_sum / keyPointSizes.size());
-
-            cout << "  Mean: " << mean << ", Std: " << stdev << endl;
-
-            /* OUTPUT
-                Shi-Tomasi detection with n=1370 keypoints in 58.7865 ms
-                Mean: 4, Std: 0
-                Harris detector with n=115 keypoints in 24.9737 ms
-                Mean: 6, Std: 0
-                Modern detection (FAST) with n=5063 keypoints in 2.52738 ms
-                Mean: 7, Std: 0
-                Modern detection (BRISK) with n=2757 keypoints in 166.79 ms
-                Mean: 21.4408, Std: 14.4372
-                Modern detection (ORB) with n=500 keypoints in 117.107 ms
-                Mean: 57.1108, Std: 25.8496
-                Modern detection (AKAZE) with n=1351 keypoints in 151.283 ms
-                Mean: 7.77008, Std: 3.95659
-                Modern detection (SIFT) with n=1438 keypoints in 183.54 ms
-                Mean: 5.04017, Std: 5.95885
-            */
-        }
-        return 0;
-
-        // TASK 7
-        /////////////////////////////////////////////////////
-
 
         bool bVis = false;
         if (detectorType.compare("SHITOMASI") == 0)
@@ -210,7 +186,30 @@ int main(int argc, const char *argv[])
                 }
             }
         }
-        //// EOF STUDENT ASSIGNMENT
+
+        vector<float> keypointsSize;
+        for (vector<cv::KeyPoint>::iterator it = keypoints.begin(); it != keypoints.end(); it++)
+        {
+            keypointsSize.push_back(it->size);
+        }
+
+        //////////////////////////////////////////////
+        // TASK 7
+        // Taken from https://stackoverflow.com/a/7616783
+
+        double sum = std::accumulate(keypointsSize.begin(), keypointsSize.end(), 0.0);
+        double mean = sum / keypointsSize.size();
+
+        std::vector<double> diff(keypointsSize.size());
+        std::transform(keypointsSize.begin(), keypointsSize.end(), diff.begin(),
+                        std::bind2nd(std::minus<double>(), mean));
+        double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+        double stdev = std::sqrt(sq_sum / keypointsSize.size());
+
+        cout << "TASK 7: (img:" << imgIndex << ") " << detectorType << " Mean: " << mean << ", Std: " << stdev << endl;
+
+        // TASK 7
+        //////////////////////////////////////////////
 
         // optional : limit number of keypoints (helpful for debugging and learning)
         bool bLimitKpts = false;
@@ -237,13 +236,6 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType;
-        // descriptorType = "BRISK";
-        // descriptorType = "BRIEF";
-        // descriptorType = "ORB";
-        // descriptorType = "FREAK";
-        descriptorType = "AKAZE";
-        // descriptorType = "SIFT";
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
 
@@ -274,7 +266,7 @@ int main(int argc, const char *argv[])
 
             matchDescriptors((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints,
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
-                             matches, descriptorType, matcherType, selectorType);
+                             matches, descriptorType, matcherType, selectorType, detectorType);
 
             //// EOF STUDENT ASSIGNMENT
 
@@ -284,7 +276,7 @@ int main(int argc, const char *argv[])
             cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;
 
             // visualize matches between current and previous image
-            bVis = true;
+            bVis = false;
             if (bVis)
             {
                 cv::Mat matchImg = ((dataBuffer.end() - 1)->cameraImg).clone();
