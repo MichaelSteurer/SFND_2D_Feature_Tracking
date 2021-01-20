@@ -3,9 +3,9 @@
 
 ## 1. Implementation Details
 
-- **main().** The main() function has been changed such that we can run the actual implementation using a _process(.)_ function with different parameters. This makes testing easier. 
+- **main().** The main() function has been changed such that we can run the actual implementation using a _process(.)_ function with different parameters. This makes running experiments easier. 
 
-- **Experiment Selector.** There is a variable `int SELECTOR` in main() that can be used to run Task 7, 8 or 9. Additionally, one can filter for output using _grep_ on the command line, e.g. `~/U/D/S/build> make && ./2D_feature_tracking | grep "TASK"`
+- **Experiment Selector.** There is a variable _SELECTOR_ in _main()_ that can be used to run Task 7, 8 or 9. Additionally, one can filter for output using _grep_ on the command line, e.g. `~/U/D/S/build> make && ./2D_feature_tracking | grep "TASK"`
 
 - **Limitation BF matcher.** In function _matchDescriptors(.)_ in file _matching2D_Student.cpp_ we have implemented the BF matcher. Hamming distance is not working with SIFT detector so we choose NORM_L1 instead.
 
@@ -15,7 +15,32 @@
 
 ## 2. Results
 
-### A) Task 7
+### MP.1 Data Buffer Optimization
+
+Implementation of queue starts [here](https://github.com/MichaelSteurer/SFND_2D_Feature_Tracking/blob/submission/src/MidTermProject_Camera_Student.cpp#L131).
+
+### MP.2 Keypoint Detection
+
+Implementation [SHITOMASI](https://github.com/MichaelSteurer/SFND_2D_Feature_Tracking/blob/submission/src/matching2D_Student.cpp#L152), [HARRIS](https://github.com/MichaelSteurer/SFND_2D_Feature_Tracking/blob/submission/src/matching2D_Student.cpp#L187) and [MODERN](https://github.com/MichaelSteurer/SFND_2D_Feature_Tracking/blob/submission/src/matching2D_Student.cpp#L256).
+
+### MP.3 Keypoint Removal
+
+Filter non-car keypoints is implemented [here](https://github.com/MichaelSteurer/SFND_2D_Feature_Tracking/blob/submission/src/MidTermProject_Camera_Student.cpp#L182).
+
+### MP.4 Keypoint Descriptors
+
+Keypoint descriptors are implemented [here](https://github.com/MichaelSteurer/SFND_2D_Feature_Tracking/blob/submission/src/matching2D_Student.cpp#L67).
+
+### MP.5 Descriptor Matching
+
+FLANN matching can be found [here](https://github.com/MichaelSteurer/SFND_2D_Feature_Tracking/blob/submission/src/matching2D_Student.cpp#L31) and KNN matching is [here](https://github.com/MichaelSteurer/SFND_2D_Feature_Tracking/blob/submission/src/matching2D_Student.cpp#L48).
+
+### MP.6 Descriptor Distance Ratio
+
+KNN Distance ratio is implmented [here](https://github.com/MichaelSteurer/SFND_2D_Feature_Tracking/blob/submission/src/matching2D_Student.cpp#L54).
+
+
+### MP.7 Performance Evaluation 1
 
 Count the number of keypoints on the preceding vehicle for all 10 images and take note of the distribution of their neighborhood size. Do this for all the detectors you have implemented. 
 
@@ -99,7 +124,7 @@ TASK 7: (img:9)       SIFT Num:        135, Mean:    5.67081, Std:    6.71983
 
 ---
 
-### B) Task 8
+### MP.8 Performance Evaluation 1
 
 The output of the program shows the number of matches per image frame. We do not sum them up as the number would then depend on the actual numbers of input frames. The full table can be found in APPENDIX A. Here is just a brief overview how the full list looks.
 
@@ -127,7 +152,7 @@ TASK 8: (img:9) Detector:  SHITOMASI, Descriptor:        ORB, Kpt Matches: 97
 
 ---
 
-### C) Task 9
+### MP.9 Performance Evaluation 1
 
 Comparing the runtime of the algorithms with different detector/descriptor combinations results in
 
