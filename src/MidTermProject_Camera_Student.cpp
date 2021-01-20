@@ -35,7 +35,7 @@ int main(int argc, const char *argv[])
     vector<string> detectorTypes;
     vector<string> descriptorTypes;
 
-    int selector = 8;
+    int selector = 9;
     if (selector == 7)
     {
         ///////////////////////////////////////////
@@ -44,7 +44,7 @@ int main(int argc, const char *argv[])
         descriptorTypes = {""};
         // TASK 7
         ///////////////////////////////////////////
-    } else if (selector == 8)
+    } else if (selector == 8 || selector == 9)
     {
         ///////////////////////////////////////////
         // TASK 8
@@ -69,7 +69,12 @@ int main(int argc, const char *argv[])
             {
                 continue;
             }
+
+            double t = (double)cv::getTickCount();
             process(detectorType, descriptorType);
+            t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+            cout << "TASK 9: " << "Detector: " << setw(10) << detectorType << ", Descriptor: " << setw(10) << descriptorType << ", t: " << 1000 * t / 1.0 << " ms" << endl;
+
         }
     }
     return 0;
@@ -206,7 +211,7 @@ int process(string detectorType, string descriptorType)
         double sq_sum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
         double stdev = std::sqrt(sq_sum / keypointsSize.size());
 
-        cout << "TASK 7: (img:" << imgIndex << ") " << detectorType << " Mean: " << mean << ", Std: " << stdev << endl;
+        cout << "TASK 7: (img:" << imgIndex << ") " << setw(10) << detectorType << " Mean: " << setw(10) << mean << ", Std: " << setw(10) << stdev << endl;
 
         // TASK 7
         //////////////////////////////////////////////
@@ -294,7 +299,9 @@ int process(string detectorType, string descriptorType)
             }
             bVis = false;
         }
-
+ 
+        cout << "TASK 8: (img:" << imgIndex << ") " << "Detector: " << setw(10) << detectorType << ", Descriptor: " << setw(10) << descriptorType << ", Kpt Mathes: " << (dataBuffer.end() - 1)->kptMatches.size() << endl;
+ 
     } // eof loop over all images
 
     return 0;
